@@ -1,0 +1,168 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+class SalesDataAnalysis:
+"""
+ Professional Sales Data Analysis Project
+ using Pandas and Matplotlib.
+ """
+def __init__(self, file_path):
+self.file_path = file_path
+self.df = None
+def load_data(self):
+"""
+ Load CSV dataset.
+ """
+try:
+self.df = pd.read_csv(self.file_path)
+print("Dataset loaded successfully.\n")
+except FileNotFoundError:
+print("Error: CSV file not found.")
+exit()
+except Exception as error:
+print(f"Error loading dataset: {error}")
+exit()
+def explore_data(self):
+"""
+ Display dataset overview.
+ """
+print("========== DATASET OVERVIEW ==========")
+print(self.df.head())
+print("\n========== DATASET INFO ==========")
+print(self.df.info())
+print("\n========== MISSING VALUES ==========")
+print(self.df.isnull().sum())
+def clean_data(self):
+"""
+ Perform data cleaning.
+ """
+print("\nCleaning dataset...")
+# Remove duplicate rows
+self.df.drop_duplicates(inplace=True)
+# Remove rows with missing values
+self.df.dropna(inplace=True)
+# Convert OrderDate to datetime
+self.df['OrderDate'] = pd.to_datetime(self.df['OrderDate'])
+# Create TotalAmount column
+self.df['TotalAmount'] = self.df['Quantity'] * self.df['Price']
+print("Dataset cleaned successfully.\n")
+def generate_summary_statistics(self):
+"""
+ Generate summary statistics.
+ """
+print("========== SUMMARY STATISTICS ==========")
+print(self.df.describe())
+def category_wise_sales(self):
+"""
+ Analyze category-wise sales.
+ """
+print("\n========== CATEGORY-WISE SALES ==========")
+category_sales = (
+self.df.groupby('Category')['TotalAmount']
+.sum()
+.sort_values(ascending=False)
+)
+print(category_sales)
+return category_sales
+def city_wise_sales(self):
+"""
+ Analyze city-wise sales.
+ """
+print("\n========== CITY-WISE SALES ==========")
+city_sales = (
+self.df.groupby('City')['TotalAmount']
+.sum()
+.sort_values(ascending=False)
+)
+print(city_sales)
+return city_sales
+def top_selling_products(self):
+"""
+ Find top-selling products.
+ """
+print("\n========== TOP SELLING PRODUCTS ==========")
+top_products = (
+self.df.groupby('Product')['Quantity']
+.sum()
+.sort_values(ascending=False)
+)
+print(top_products)
+return top_products
+def filter_high_sales(self):
+"""
+ Filter high-value sales.
+ """
+print("\n========== HIGH VALUE SALES ==========")
+high_sales = self.df[self.df['TotalAmount'] > 50000]
+print(high_sales[[
+'CustomerName',
+'Product',
+'TotalAmount',
+'City'
+]])
+def generate_visualizations(self):
+"""
+ Create graphs for analysis.
+ """
+# Category-wise sales graph
+category_sales = self.category_wise_sales()
+plt.figure(figsize=(8, 5))
+category_sales.plot(kind='bar')
+plt.title('Category Wise Sales')
+plt.xlabel('Category')
+plt.ylabel('Total Sales Amount')
+plt.tight_layout()
+plt.savefig('category_sales.png')
+plt.show()
+# City-wise sales graph
+city_sales = self.city_wise_sales()
+plt.figure(figsize=(8, 5))
+city_sales.plot(kind='bar')
+plt.title('City Wise Sales')
+plt.xlabel('City')
+plt.ylabel('Total Sales Amount')
+plt.tight_layout()
+plt.savefig('city_sales.png')
+plt.show()
+def generate_insights(self):
+"""
+ Generate meaningful business insights.
+ """
+print("\n========== BUSINESS INSIGHTS ==========")
+highest_sales_category = (
+self.df.groupby('Category')['TotalAmount']
+.sum()
+.idxmax()
+)
+highest_sales_city = (
+self.df.groupby('City')['TotalAmount']
+.sum()
+.idxmax()
+)
+top_product = (
+self.df.groupby('Product')['Quantity']
+.sum()
+.idxmax()
+)
+total_revenue = self.df['TotalAmount'].sum()
+print(f"Highest Sales Category: {highest_sales_category}")
+print(f"Highest Sales City: {highest_sales_city}")
+print(f"Top Selling Product: {top_product}")
+print(f"Total Revenue Generated: ₹{total_revenue}")
+def run_analysis(self):
+"""
+ Run complete analysis pipeline.
+ """
+self.load_data()
+self.explore_data()
+self.clean_data()
+self.generate_summary_statistics()
+self.category_wise_sales()
+self.city_wise_sales()
+self.top_selling_products()
+self.filter_high_sales()
+self.generate_visualizations()
+self.generate_insights()
+if __name__ == '__main__':
+analyzer = SalesDataAnalysis('data/sales_data.csv')
+analyzer.run_analysis()
